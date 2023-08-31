@@ -48,8 +48,43 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById("forecast-container");
             forecastContainer.innerHTML = "";
 
+            function getWeatherIconClass(description) {
+              var iconMapping = {
+                "clear sky": "fa-sun",
+                "few clouds": "fa-cloud-sun",
+                "broken clouds": "fa-cloud-sun",
+                "scattered clouds": "fa-cloud",
+                snow: "fa-snowflake",
+                "scattered rains": "fa-cloud-showers-water",
+                rain: "fa-cloud-rain",
+                "light rain": "fa-cloud-sun-rain",
+              };
+              return iconMapping[description.toLowerCase()] || "fa-question";
+            }
+
             forecastData.list.forEach((item) => {
               var dateTime = item.dt_txt;
+              var dateObj = new Date(dateTime);
+              var dayOfWeek = dateObj.getDay();
+
+              var daysOfWeek = [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+              ];
+
+              var formattedDate = `${daysOfWeek[dayOfWeek]}, ${
+                dateObj.getMonth() + 1
+              }/${dateObj.getFullYear()}`;
+              var formattedTime = dateObj.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+
               var temperature = item.main.temp;
               var humidity = item.main.humidity;
               var windSpeed = item.wind.speed;
@@ -61,21 +96,22 @@ document.addEventListener("DOMContentLoaded", function () {
               forecastCard.classList.add("forecast-card");
 
               var dateElement = document.createElement("p");
-              dateElement.textContent = dateTime;
+              dateElement.textContent = `Date: ${formattedDate} ${formattedTime}`;
 
               var temperatureElement = document.createElement("p");
-              temperatureElement.textContent = `Temperature: ${temperatureFahrenheit.toFixed(
+              temperatureElement.innerHTML = `<i class="fas fa-thermometer-half"></i> Temperature: ${temperatureFahrenheit.toFixed(
                 2
               )} °F`;
 
               var humidityElement = document.createElement("p");
-              humidityElement.textContent = `Humidity: ${humidity}%`;
+              humidityElement.innerHTML = `<i class="fas fa-tint"></i> Humidity: ${humidity}%`;
 
               var windElement = document.createElement("p");
-              windElement.textContent = `Wind Speed: ${windSpeed} m/s`;
+              windElement.innerHTML = `<i class="fas fa-wind"></i> Wind Speed: ${windSpeed} m/s`;
 
               var descriptionElement = document.createElement("p");
-              descriptionElement.textContent = `Description: ${weatherDescription}`;
+              var weatherIconClass = getWeatherIconClass(weatherDescription);
+              descriptionElement.innerHTML = `<i class="fas ${weatherIconClass}"></i> Description: ${weatherDescription}`;
 
               forecastCard.appendChild(dateElement);
               forecastCard.appendChild(temperatureElement);
